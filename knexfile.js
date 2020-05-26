@@ -4,17 +4,16 @@ module.exports = {
 
   development: {
     client: 'pg',
-    connection: {
-      database: utils.secrets.devDb,
-      user:     'username',
-      password: 'password'
-    },
+    connection: utils.secrets.devDb,
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      tableName: 'knex_migrations'
+      directory: './database/migrations'
+    },
+    seeds: {
+      directory: './database/seeds'
     }
   },
 

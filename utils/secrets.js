@@ -3,5 +3,5 @@ config()
 
 module.exports = ({
     port: process.env.PORT,
-    devDb: process.env.DB_URL
+    devDb: process.env.URL
 })
