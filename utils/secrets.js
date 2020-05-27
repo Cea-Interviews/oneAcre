@@ -1,7 +1,7 @@
 const {config} = require('dotenv')
 config()
 
-module.exports = ({
+module.exports = {
     port: process.env.PORT,
     devDb: process.env.URL
-})
+}

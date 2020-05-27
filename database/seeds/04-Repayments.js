@@ -19,7 +19,7 @@ exports.seed = function (knex) {
         },
         {
           CustomerID: 3,
-          SeasonID: 0,
+          SeasonID: 140,
           Date: "3/5/2016",
           Amount: 300,
         },
@@ -61,7 +61,7 @@ exports.seed = function (knex) {
         },
         {
           CustomerID: 11,
-          SeasonID: 0,
+          SeasonID: 120,
           Date: "3/12/2016",
           Amount: 330,
         },

@@ -44,9 +44,15 @@ exports.up = function (knex) {
         .onUpdate("CASCADE");
       table
         .integer("SeasonID")
-        .nullable()
+        .unsigned()
+        .notNullable()
+        .references("SeasonID")
+        .inTable("Seasons")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
       table.date("Date").notNullable();
       table.decimal("Amount").notNullable();
+      table.integer("ParentID")
     });
 };
 

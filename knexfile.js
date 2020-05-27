@@ -1,10 +1,11 @@
 // Update with your config settings.
-const utils = require('./utils')
+const {config} = require('dotenv')
+config()
 module.exports = {
 
   development: {
     client: 'pg',
-    connection: utils.secrets.devDb,
+    connection: process.env.URL,
     pool: {
       min: 2,
       max: 10
