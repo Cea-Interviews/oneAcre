@@ -19,9 +19,9 @@ const overpaid = async (CustomerID, date, Amount) => {
   const CustomerSummary = await model.updateCustomerSummaries(totalRepaid, id);
   return {
     repaymentRecord: {
-      ...repaymentRecord,
-      Amount: Number(repaymentRecord.Amount),
-      Date: new Date(repaymentRecord.Date).toLocaleDateString(),
+      ...repaymentRecord[0],
+      Amount: Number(repaymentRecord[0].Amount),
+      Date: new Date(repaymentRecord[0].Date).toLocaleDateString(),
     },
     CustomerSummary: mapper.toNumber(CustomerSummary)[0],
   };
@@ -47,9 +47,9 @@ const override = async (CustomerID, SeasonID, date, Amount) => {
     );
     return {
       repaymentRecord: {
-        ...repaymentRecord,
-        Amount: Number(repaymentRecord.Amount),
-        Date: new Date(repaymentRecord.Date).toLocaleDateString(),
+        ...repaymentRecord[0],
+        Amount: Number(repaymentRecord[0].Amount),
+        Date: new Date(repaymentRecord[0].Date).toLocaleDateString(),
       },
       CustomerSummary: mapper.toNumber(CustomerSummary)[0],
     };
@@ -60,7 +60,6 @@ const override = async (CustomerID, SeasonID, date, Amount) => {
 const cascade = async (CustomerID, date, Amount) => {
   const upload = { CustomerID, Date: date, Amount };
   const response = await model.outstandingCredit(CustomerID);
-  console.log(response)
   let deposit = Amount;
   let repaymentsRecords = [];
   let customerSummaries = [];
@@ -76,7 +75,7 @@ const cascade = async (CustomerID, date, Amount) => {
         SeasonID: response[i].SeasonID,
         Amount: currentAmount,
       });
-      repaymentsRecords.push(repaymentRecord);
+      repaymentsRecords.push(repaymentRecord[0]);
       if (Number(currentAmount) > 0) {
         responses = await model.updateCustomerSummaries(
           totalRepaid,
@@ -84,7 +83,6 @@ const cascade = async (CustomerID, date, Amount) => {
         );
         customerSummaries.push(...responses);
       }
-
       if (deficit < currentAmount) {
         currentAmount = deficit - currentAmount;
         const adjustment = await model.uploadPayments({
@@ -92,19 +90,22 @@ const cascade = async (CustomerID, date, Amount) => {
           SeasonID: response[i].SeasonID,
           Amount: currentAmount,
         });
-        repaymentsRecords.push(adjustment);
+        repaymentsRecords.push(adjustment[0]);
         deposit = -currentAmount;
       } else break;
-    }
+    }else break;
   }
   const parentID = repaymentsRecords[0].RepaymentsID;
   const newRecords = await Promise.all(
     repaymentsRecords.map(async (repayment) => {
-      return await model.updateParentID(parentID, repayment.RepaymentsID);
+      const response = await model.updateParentID(parentID, repayment.RepaymentsID);
+      response[0].Date = new Date(response[0].Date).toLocaleDateString()
+      response[0].Amount = Number(response[0].Amount)
+      return response[0]
     })
   );
   return {
-    repaymentRecord: newRecords,
+    repaymentRecord:newRecords,
     CustomerSummary: mapper.toNumber(customerSummaries),
   };
 };

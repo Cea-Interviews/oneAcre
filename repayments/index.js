@@ -18,5 +18,5 @@ router.get('/customers/summary',  repayments.getCustomerSummary)
 router.get('/seasons', repayments.getSeasons)
 router.post('/mrepayments', upload.single('repayments'), repayments.multipleRepayments)
 router.post('/repayments', repayments.uploadRepayments)
-router.get('/repayments',repayments.getRepayments)
+router.get('/repayments', validation.validateRepaymentUpload, repayments.getRepayments)
 module.exports = router

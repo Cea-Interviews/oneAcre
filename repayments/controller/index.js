@@ -116,7 +116,6 @@ const uploadRepayments = async (req, res) => {
         });
     }
     const seasonsOwed = await model.outstandingCredit(CustomerID);
- 
     if (seasonsOwed.length === 0) {
       response = await overpaid(CustomerID, Date, Amount);
       return res.status(201).json({
@@ -124,7 +123,6 @@ const uploadRepayments = async (req, res) => {
         data: response,
       });
     }
-    console.log('here')
     if (seasonsOwed.length > 0 || SeasonID === 0) {
       response = await cascade(CustomerID, Date, Amount);
       return res.status(201).json({

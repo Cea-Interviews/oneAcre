@@ -37,8 +37,7 @@ class repaymentModel {
     return query;
   }
   static async updateParentID(ParentID, RepaymentsID){
-    console.log(ParentID, RepaymentsID)
-    const  response = await db('Repayments').update({ParentID}, 'RepaymentsID').where({RepaymentsID}).first()
+    const  response = await db('Repayments').update({ParentID}, 'RepaymentsID').where({RepaymentsID})
     return this.getRepayments(response[0])
   }
 
@@ -82,9 +81,9 @@ class repaymentModel {
     return await db("CustomerSummaries")
   }
   static async outstandingCredit(CustomerID){
-     const response = await db('CustomerSummaries').orderBy('SeasonID')
-     return response.filter(Summary=> Summary.CustomerID === CustomerID && Number(Summary.TotalCredit) > Number(Summary.TotalRepaid)
-     )
+     const response = await db('CustomerSummaries').where({CustomerID}).orderBy('SeasonID')
+     const val= response.filter(Summary => Number(Summary.TotalCredit) > Number(Summary.TotalRepaid))
+     return val
   }
   static async updateCustomerSummaries(TotalRepaid,id){
       const  response = await db('CustomerSummaries').update({TotalRepaid}, ['id', 'CustomerID']).where({id})
