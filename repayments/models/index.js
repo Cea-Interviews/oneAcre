@@ -37,7 +37,8 @@ class repaymentModel {
     return query;
   }
   static async updateParentID(ParentID, RepaymentsID){
-    const  response = await db('Repayments').update({ParentID}, 'RepaymentsID').where({RepaymentsID})
+    console.log(ParentID, RepaymentsID)
+    const  response = await db('Repayments').update({ParentID}, 'RepaymentsID').where({RepaymentsID}).first()
     return this.getRepayments(response[0])
   }
 
@@ -64,44 +65,21 @@ class repaymentModel {
     return this.updateParentID(ids[0], ids[0]);
   }
   static async getCustomerSummaries(CustomerID, SeasonID ,id) {
-    console.log(CustomerID, SeasonID ,id)
     if(id){
-        return await db
-        .select("cr.CustomerName",'cr.CustomerID','s.SeasonName', 's.SeasonID', "cr.TotalCredit",'cr.TotalRepaid')
-        .from("CustomerSummaries as cr") 
-        .leftJoin("Customers as c", "c.CustomerID", "cr.CustomerID")
-        .leftJoin("Seasons as s", "s.SeasonID", "cr.SeasonID")
-        .where('cr.id', id);
+        return await db('CustomerSummaries').where({id})
+       
     }
     if (CustomerID && SeasonID) {
-      return await db
-      .select("c.CustomerName",'cr.CustomerID','s.SeasonName', 's.SeasonID', "cr.TotalCredit",'cr.TotalRepaid')
-      .from("CustomerSummaries as cr") 
-      .leftJoin("Customers as c", "c.CustomerID", "cr.CustomerID")
-      .leftJoin("Seasons as s", "s.SeasonID", "cr.SeasonID")
-      .where('cr.CustomerID', CustomerID).andWhere('cr.SeasonID', SeasonID);
+      return await db('CustomerSummaries').where({ CustomerID, SeasonID})
     }
     if (CustomerID) {
-      return await db
-      .select("c.CustomerName",'cr.CustomerID','s.SeasonName', 's.SeasonID', "cr.TotalCredit",'cr.TotalRepaid')
-      .from("CustomerSummaries as cr") 
-      .leftJoin("Customers as c", "c.CustomerID", "cr.CustomerID")
-      .leftJoin("Seasons as s", "s.SeasonID", "cr.SeasonID")
-      .where('cr.CustomerID', CustomerID);
+      return await db('CustomerSummaries').where({ CustomerID})
+
     }
     if (SeasonID) {
-      return await db
-      .select("c.CustomerName",'cr.CustomerID','s.SeasonName', 's.SeasonID', "cr.TotalCredit",'cr.TotalRepaid')
-      .from("CustomerSummaries as cr") 
-      .leftJoin("Customers as c", "c.CustomerID", "cr.CustomerID")
-      .leftJoin("Seasons as s", "s.SeasonID", "cr.SeasonID")
-      .where('cr.SeasonID', SeasonID);
+      return await db("CustomerSummaries").where({SeasonID});
     }
-    return await db
-    .select("c.CustomerName",'cr.CustomerID','s.SeasonName', 's.SeasonID', "cr.TotalCredit",'cr.TotalRepaid')
-    .from("CustomerSummaries as cr") 
-    .leftJoin("Customers as c", "c.CustomerID", "cr.CustomerID")
-    .leftJoin("Seasons as s", "s.SeasonID", "cr.SeasonID")
+    return await db("CustomerSummaries")
   }
   static async outstandingCredit(CustomerID){
      const response = await db('CustomerSummaries').orderBy('SeasonID')

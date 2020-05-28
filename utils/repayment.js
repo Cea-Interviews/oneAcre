@@ -60,6 +60,7 @@ const override = async (CustomerID, SeasonID, date, Amount) => {
 const cascade = async (CustomerID, date, Amount) => {
   const upload = { CustomerID, Date: date, Amount };
   const response = await model.outstandingCredit(CustomerID);
+  console.log(response)
   let deposit = Amount;
   let repaymentsRecords = [];
   let customerSummaries = [];
