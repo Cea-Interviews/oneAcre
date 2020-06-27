@@ -11,63 +11,67 @@ const multipleRepayments = (req, res) => {
     req.file.originalname.endsWith(".xlsx")
   ) {
     inputs = excelToJson({ source: req.file.buffer });
-    inputs = inputs["Repayment Upload"].map((input) => {
-      return {
-        CustomerID: input.A,
-        SeasonID: input.B || "",
-        Date: new Date(input.C).toLocaleDateString(),
-        Amount: input.D,
-      };
-    });
-    inputs = inputs.slice(1, inputs.length);
+    console.log(inputs['IPHONES'][4])
   }
-  if (req.file.originalname.endsWith(".json")) {
-    inputs = JSON.parse(req.file.buffer.toString()).RepaymentUploads;
-  }
-  const error = [];
-  inputs.forEach(async (input) => {
-    schema.repaymentsUpload.validate(
-      input,
-      { abortEarly: false, stripUnknown: true },
-      (err) => {
-        if (err) {
-          const errMsg = [];
-          for (let i = 0; i < err.details.length; i++) {
-            errMsg.push(err.details[i].message);
-          }
-        }
-      }
-    );
-    const { SeasonID, CustomerID, Date, Amount } = input;
+  //   inputs = inputs["Repayment Upload"].map((input) => {
+  //     return {
+  //       CustomerID: input.A,
+  //       SeasonID: input.B || "",
+  //       Date: new Date(input.C).toLocaleDateString(),
+  //       Amount: input.D,
+  //     };
+  //   });
+  //   inputs = inputs.slice(1, inputs.length);
+  // }
+  // if (req.file.originalname.endsWith(".json")) {
+  //   inputs = JSON.parse(req.file.buffer.toString()).
+  //   console.log(inputs)
 
-    if (SeasonID && SeasonID !== 0) {
-      try {
-        await override(CustomerID, SeasonID, Date, Amount);
-      } catch (err) {
-        error.push(err);
-      }
-    } else if ((await model.outstandingCredit(CustomerID).length) === 0) {
-      try {
-        await overpaid(CustomerID, Date, Amount);
-      } catch (err) {
-        error.push(err);
-      }
-    } else if (
-      (await model.outstandingCredit(CustomerID).length) > 0 ||
-      SeasonID === 0
-    ) {
-      try {
-        await cascade(CustomerID, Date, Amount);
-      } catch (err) {
-        error.push(err);
-      }
-    }
-  });
-  return res.status(201).json({
-    status: 201,
-    data: "Files Uploaded",
-    error,
-  });
+  // }
+  // const error = [];
+  // inputs.forEach(async (input) => {
+  //   schema.repaymentsUpload.validate(
+  //     input,
+  //     { abortEarly: false, stripUnknown: true },
+  //     (err) => {
+  //       if (err) {
+  //         const errMsg = [];
+  //         for (let i = 0; i < err.details.length; i++) {
+  //           errMsg.push(err.details[i].message);
+  //         }
+  //       }
+  //     }
+  //   );
+  //   const { SeasonID, CustomerID, Date, Amount } = input;
+
+  //   if (SeasonID && SeasonID !== 0) {
+  //     try {
+  //       await override(CustomerID, SeasonID, Date, Amount);
+  //     } catch (err) {
+  //       error.push(err);
+  //     }
+  //   } else if ((await model.outstandingCredit(CustomerID).length) === 0) {
+  //     try {
+  //       await overpaid(CustomerID, Date, Amount);
+  //     } catch (err) {
+  //       error.push(err);
+  //     }
+  //   } else if (
+  //     (await model.outstandingCredit(CustomerID).length) > 0 ||
+  //     SeasonID === 0
+  //   ) {
+  //     try {
+  //       await cascade(CustomerID, Date, Amount);
+  //     } catch (err) {
+  //       error.push(err);
+  //     }
+  //   }
+  // });
+  // return res.status(201).json({
+  //   status: 201,
+  //   data: "Files Uploaded",
+  //   error,
+  // });
 };
 const getRepayments = async (req, res) => {
   try {
